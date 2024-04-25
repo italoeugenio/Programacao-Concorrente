@@ -10,17 +10,24 @@ public class Funcionario extends Thread {
         this.contaSalario = contaSalario;
         this.contaInvestimento = contaInvestimento;
         this.loja = loja;
+
+        loja.contrataFuncionario(this);
     }
 
     @Override
     public void run() {
         while (true) {
-            receberSalario();
-            investir();
+            if(loja.getContaLoja().getSaldo() >= loja.numeroDeFuncionarios() * SALARIO) {
+
+                receberSalario();
+                investir();
+
+                break;
+            }
+
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
         }
     }
@@ -31,6 +38,7 @@ public class Funcionario extends Thread {
 
     private synchronized void receberSalario() {
         contaSalario.creditar(SALARIO);
+        this.loja.getContaLoja().debitar(SALARIO);
         System.out.printf("Funcionário %s recebeu salário de R$ %.2f da loja %s\n", this.getName(), SALARIO, loja.getNome());
     }
 

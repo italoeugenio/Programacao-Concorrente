@@ -1,10 +1,15 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Loja {
     private String nome;
     private Conta contaLoja;
+    private List<Funcionario> funcionarios;
 
     public Loja(String nome, Banco banco) {
         this.nome = nome;
         this.contaLoja = new Conta(0.0, "Titular da Conta Loja");
+        this.funcionarios = new ArrayList<>();
     }
 
     public synchronized void receberPagamento(double valor) {
@@ -24,6 +29,14 @@ public class Loja {
         }
         contaLoja.debitar(Funcionario.getSalario());
         System.out.printf("Loja %s pagou R$ %.2f para o funcionário %s\n", nome, Funcionario.getSalario(), funcionario.getName());
+    }
+
+    public void contrataFuncionario(Funcionario funcionario) {
+        this.funcionarios.add(funcionario);
+    }
+
+    public int numeroDeFuncionarios() {
+        return this.funcionarios.size();
     }
 
     public String getNome() {

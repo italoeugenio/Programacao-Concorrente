@@ -1,10 +1,14 @@
+import java.util.List;
+
 public class Cliente extends Thread {
 
     private Banco banco;
-    private Conta conta;
+    private final Conta conta;
+    private Loja[] lojas;
 
-    public Cliente(Banco banco) {
+    public Cliente(Banco banco, Loja ... lojas) {
         this.banco = banco;
+        this.lojas = lojas;
         this.conta = new Conta(1000.0, "Titular da Conta do Cliente");
     }
 
@@ -20,12 +24,9 @@ public class Cliente extends Thread {
 
     @Override
     public void run() {
-        Loja loja1 = new Loja("Loja 1", banco);
-        Loja loja2 = new Loja("Loja 2", banco);
-
         while (conta.getSaldo() > 0) {
-            Loja lojaCompra = (conta.getSaldo() >= 200.00) ? loja2 : loja1;
-            double valorCompra = (conta.getSaldo() >= 200.00) ? 200.00 : 100.00;
+            Loja lojaCompra = Math.random() < 0.5 ? lojas[0] : lojas[1];
+            double valorCompra = Math.random() < 0.5 ? 100 : 200;
 
             System.out.printf("Cliente %s comprando R$ %.2f na loja %s\n", this.getName(), valorCompra, lojaCompra.getNome());
             comprar(lojaCompra, valorCompra);
