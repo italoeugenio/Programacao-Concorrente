@@ -1,49 +1,56 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Loja {
-    private String nome;
-    private Conta contaLoja;
-    private List<Funcionario> funcionarios;
+    Conta conta;
+    Banco banco;
+    Funcionario primeiroFuncionario;
+    Funcionario segundoFuncionario;
+    String nomeLoja;
+    private Lock lock = new ReentrantLock();
 
-    public Loja(String nome, Banco banco) {
-        this.nome = nome;
-        this.contaLoja = new Conta(0.0, "Titular da Conta Loja");
-        this.funcionarios = new ArrayList<>();
+    public Loja(Banco banco, String nomeLoja) {
+        this.banco = banco;
+        this.nomeLoja = nomeLoja;
+        this.conta = new Conta();
+        this.conta.creditarSaldo(0.0);
+        this.primeiroFuncionario = new Funcionario(banco, "Primeiro funcionário da loja " + this.nomeLoja);
+        this.segundoFuncionario = new Funcionario(banco, "Segundo funcionário da loja " + this.nomeLoja);
+
+        // Este trecho de código cria um observador para verificar se esta conta tem 1400 de saldo e, em seguida, pagar um funcionário
+        this.conta.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                lock.lock();
+                try {
+                    if (evt.getPropertyName().equals("pago")) {
+                        if (conta.getSaldo() >= 1400) {
+                            pagarFuncionario();
+                        }
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            }
+        });
     }
 
-    public synchronized void receberPagamento(double valor) {
-        contaLoja.creditar(valor);
-        System.out.printf("Loja %s recebeu um pagamento de R$ %.2f\n", nome, valor);
-        notifyAll();
-    }
+    void pagarFuncionario() {
+        if (this.conta.getSaldo() >= 1400) {
+            System.out.println("Loja " + this.nomeLoja + " com 1400 na conta.");
+            System.out.println("Pagando o funcionário: " + primeiroFuncionario.nome);
+            System.out.println("\n");
 
-    public synchronized void pagarFuncionario(Funcionario funcionario) {
-        while (contaLoja.getSaldo() < Funcionario.getSalario()) {
-            try {
-                System.out.printf("Loja %s aguardando saldo suficiente para pagar funcionário %s\n", nome, funcionario.getName());
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            // Verifica qual funcionário tem mais dinheiro a ser pago
+            if (this.primeiroFuncionario.contaSalario.getSaldo() > this.segundoFuncionario.contaSalario.getSaldo()) {
+                banco.transferir(this.conta, this.segundoFuncionario.contaSalario, 1400.00, this.nomeLoja, this.segundoFuncionario.nome);
+                this.segundoFuncionario.investirDinheiro();
+            } else {
+                banco.transferir(this.conta, this.primeiroFuncionario.contaSalario, 1400.00, this.nomeLoja, this.primeiroFuncionario.nome);
+                this.primeiroFuncionario.investirDinheiro();
             }
         }
-        contaLoja.debitar(Funcionario.getSalario());
-        System.out.printf("Loja %s pagou R$ %.2f para o funcionário %s\n", nome, Funcionario.getSalario(), funcionario.getName());
-    }
-
-    public void contrataFuncionario(Funcionario funcionario) {
-        this.funcionarios.add(funcionario);
-    }
-
-    public int numeroDeFuncionarios() {
-        return this.funcionarios.size();
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Conta getContaLoja() {
-        return contaLoja;
     }
 }
