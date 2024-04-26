@@ -19,7 +19,7 @@ public class Loja {
         this.primeiroFuncionario = new Funcionario(banco, "Primeiro funcionário da loja " + this.nomeLoja);
         this.segundoFuncionario = new Funcionario(banco, "Segundo funcionário da loja " + this.nomeLoja);
 
-        // Este trecho de código cria um observador para verificar se esta conta tem 1400 de saldo e, em seguida, pagar um funcionário
+
         this.conta.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -39,11 +39,11 @@ public class Loja {
 
     void pagarFuncionario() {
         if (this.conta.getSaldo() >= 1400) {
-            System.out.println("Loja " + this.nomeLoja + " com 1400 na conta.");
+            System.out.println(this.nomeLoja + " com 1400 na conta.");
             System.out.println("Pagando o funcionário: " + primeiroFuncionario.nome);
             System.out.println("\n");
 
-            // Verifica qual funcionário tem mais dinheiro a ser pago
+            // Verifica qual funcionário tem saldo menor e transfere o pagamento para ele
             if (this.primeiroFuncionario.contaSalario.getSaldo() > this.segundoFuncionario.contaSalario.getSaldo()) {
                 banco.transferir(this.conta, this.segundoFuncionario.contaSalario, 1400.00, this.nomeLoja, this.segundoFuncionario.nome);
                 this.segundoFuncionario.investirDinheiro();

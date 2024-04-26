@@ -12,17 +12,22 @@ public class Funcionario extends Thread {
             this.contaInvestimento = new Conta();
             this.contaSalario = new Conta();
         } catch (Exception e) {
-            System.out.println("Problema ao criar a conta na classe Funcionário.");
+            System.out.println("Erro ao criar as contas do funcionário. Verifique se as contas podem ser inicializadas corretamente na classe Funcionário.");
         }
 
         this.contaSalario.creditarSaldo(0.0);
         this.contaInvestimento.creditarSaldo(0.0);
     }
 
+    // Método para investir 20% do saldo da conta salário na conta de investimento
     void investirDinheiro() {
-        System.out.println("Investindo 20% da conta, totalizando: " + this.contaSalario.getSaldo() * 0.2);
+        double valorInvestido = this.contaSalario.getSaldo() * 0.2;
+        System.out.println("O " + this.nome + " está investindo 20% do saldo da conta salário.");
+        System.out.println("Valor investido: R$" + valorInvestido);
+        System.out.println("Saldo atual da conta salário: R$" + this.contaSalario.getSaldo());
         System.out.println("\n");
-        contaInvestimento.creditarSaldo(this.contaSalario.getSaldo() * 0.2);
-        contaSalario.debitarSaldo(this.contaSalario.getSaldo() * 0.2);
+
+        contaInvestimento.creditarSaldo(valorInvestido);
+        contaSalario.debitarSaldo(valorInvestido);
     }
 }

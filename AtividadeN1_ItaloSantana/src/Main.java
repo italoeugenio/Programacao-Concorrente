@@ -1,7 +1,6 @@
 public class Main {
     public static void main(String[] args) {
 
-        // O método main apenas instancia objetos e inicia as threads
         Banco banco = new Banco();
 
         Loja loja1 = new Loja(banco, "Loja1");
@@ -29,7 +28,8 @@ public class Main {
         }
 
         // Verifica o saldo final das lojas
-        System.out.println("Saldo final das lojas: ");
+        System.out.println("#####################SALDOS FINAIS#####################");
+        System.out.println("------------- Saldo final das lojas -------------: ");
         System.out.println("Saldo da " + loja1.nomeLoja + ": " + loja1.conta.getSaldo());
         System.out.println("Saldo da " + loja2.nomeLoja + ": " + loja2.conta.getSaldo());
 

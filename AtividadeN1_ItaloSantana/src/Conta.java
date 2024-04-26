@@ -37,7 +37,7 @@ public class Conta {
             lock.unlock();
         }
     }
-
+    // Método para adicionar um "ouvinte" para mudanças nas propriedades
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
