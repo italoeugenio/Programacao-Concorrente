@@ -1,51 +1,28 @@
 public class Funcionario extends Thread {
-    public static final double SALARIO = 1400.0;
-    private static final double PERCENTUAL_INVESTIMENTO = 0.2;
+    Conta contaSalario;
+    Conta contaInvestimento;
+    Banco banco;
+    String nome;
 
-    private Conta contaSalario;
-    private Conta contaInvestimento;
-    private Loja loja;
+    public Funcionario(Banco banco, String nome) {
+        this.banco = banco;
+        this.nome = nome;
 
-    public Funcionario(Conta contaSalario, Conta contaInvestimento, Loja loja) {
-        this.contaSalario = contaSalario;
-        this.contaInvestimento = contaInvestimento;
-        this.loja = loja;
-
-        loja.contrataFuncionario(this);
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            if(loja.getContaLoja().getSaldo() >= loja.numeroDeFuncionarios() * SALARIO) {
-
-                receberSalario();
-                investir();
-
-                break;
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
+        try {
+            this.contaInvestimento = new Conta();
+            this.contaSalario = new Conta();
+        } catch (Exception e) {
+            System.out.println("Problema ao criar a conta na classe Funcionário.");
         }
+
+        this.contaSalario.creditarSaldo(0.0);
+        this.contaInvestimento.creditarSaldo(0.0);
     }
 
-    public static double getSalario() {
-        return SALARIO;
-    }
-
-    private synchronized void receberSalario() {
-        contaSalario.creditar(SALARIO);
-        this.loja.getContaLoja().debitar(SALARIO);
-        System.out.printf("Funcionário %s recebeu salário de R$ %.2f da loja %s\n", this.getName(), SALARIO, loja.getNome());
-    }
-
-    private synchronized void investir() {
-        double valorInvestimento = SALARIO * PERCENTUAL_INVESTIMENTO;
-        contaSalario.debitar(valorInvestimento);
-        contaInvestimento.creditar(valorInvestimento);
-        System.out.printf("Funcionário %s investiu R$ %.2f na conta de investimento\n", this.getName(), valorInvestimento);
+    void investirDinheiro() {
+        System.out.println("Investindo 20% da conta, totalizando: " + this.contaSalario.getSaldo() * 0.2);
+        System.out.println("\n");
+        contaInvestimento.creditarSaldo(this.contaSalario.getSaldo() * 0.2);
+        contaSalario.debitarSaldo(this.contaSalario.getSaldo() * 0.2);
     }
 }
