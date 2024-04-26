@@ -16,31 +16,30 @@ public class Loja {
         this.nomeLoja = nomeLoja;
         this.conta = new Conta();
         this.conta.creditarSaldo(0.0);
-        this.primeiroFuncionario = new Funcionario(banco, "Primeiro funcionário da loja " + this.nomeLoja);
-        this.segundoFuncionario = new Funcionario(banco, "Segundo funcionário da loja " + this.nomeLoja);
+        this.primeiroFuncionario = new Funcionario(banco, "1° funcionário da loja " + this.nomeLoja);
+        this.segundoFuncionario = new Funcionario(banco, "2° funcionário da loja " + this.nomeLoja);
 
 
-        this.conta.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                lock.lock();
-                try {
-                    if (evt.getPropertyName().equals("pago")) {
-                        if (conta.getSaldo() >= 1400) {
-                            pagarFuncionario();
-                        }
+        // Utilizando expressão lambda
+        this.conta.addPropertyChangeListener(evt -> {
+            lock.lock();
+            try {
+                if (evt.getPropertyName().equals("saldo")) {
+                    if (conta.getSaldo() >= 1400) {
+                        pagarFuncionario();
                     }
-                } finally {
-                    lock.unlock();
                 }
+            } finally {
+                lock.unlock();
             }
         });
     }
 
+
     void pagarFuncionario() {
         if (this.conta.getSaldo() >= 1400) {
             System.out.println(this.nomeLoja + " com 1400 na conta.");
-            System.out.println("Pagando o funcionário: " + primeiroFuncionario.nome);
+            System.out.println("Pagamento do funcionário: " + primeiroFuncionario.nome);
             System.out.println("\n");
 
             // Verifica qual funcionário tem saldo menor e transfere o pagamento para ele

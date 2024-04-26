@@ -41,7 +41,6 @@ public class Banco {
                 destinatario.creditarSaldo(valor);
             }
         } finally {
-            // Libera o bloqueio para permitir que outras threads acessem o método
             lock.unlock();
         }
     }

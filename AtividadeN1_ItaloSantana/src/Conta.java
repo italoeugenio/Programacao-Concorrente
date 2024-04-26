@@ -21,7 +21,7 @@ public class Conta {
         try {
             Double saldoAnterior = this.saldo;
             this.saldo -= valor;
-            propertyChangeSupport.firePropertyChange("pago", saldoAnterior, this.saldo);
+            propertyChangeSupport.firePropertyChange("saldo", saldoAnterior, this.saldo);
         } finally {
             lock.unlock();
         }
@@ -32,7 +32,7 @@ public class Conta {
         try {
             Double saldoAnterior = this.saldo;
             this.saldo += valor;
-            propertyChangeSupport.firePropertyChange("pago", saldoAnterior, this.saldo);
+            propertyChangeSupport.firePropertyChange("saldo", saldoAnterior, this.saldo);
         } finally {
             lock.unlock();
         }
