@@ -1,37 +1,35 @@
-import java.util.List;
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Cliente extends Thread {
+    Banco banco;
+    Conta conta;
+    Loja loja1;
+    Loja loja2;
+    String nome;
+    Random random = new Random();
+    private Lock lock = new ReentrantLock();
 
-    private Banco banco;
-    private final Conta conta;
-    private Loja[] lojas;
-
-    public Cliente(Banco banco, Loja ... lojas) {
+    public Cliente(Banco banco, Loja loja1, Loja loja2, String nome) {
         this.banco = banco;
-        this.lojas = lojas;
-        this.conta = new Conta(1000.0, "Titular da Conta do Cliente");
+        this.conta = new Conta();
+        this.conta.creditarSaldo(1000.0);
+        this.loja1 = loja1;
+        this.loja2 = loja2;
+        this.nome = nome;
     }
 
-    public void comprar(Loja loja, double valorCompra) {
-        try {
-            synchronized (conta) {
-                banco.transferir(conta, loja.getContaLoja(), valorCompra);
-            }
-        } catch (Exception e) {
-            System.out.printf("Cliente %s: Erro durante a compra na loja %s (Valor: R$ %.2f)\n", this.getName(), loja.getNome(), valorCompra);
-        }
-    }
-
-    @Override
     public void run() {
-        while (conta.getSaldo() > 0) {
-            Loja lojaCompra = Math.random() < 0.5 ? lojas[0] : lojas[1];
-            double valorCompra = Math.random() < 0.5 ? 100 : 200;
-
-            System.out.printf("Cliente %s comprando R$ %.2f na loja %s\n", this.getName(), valorCompra, lojaCompra.getNome());
-            comprar(lojaCompra, valorCompra);
+        lock.lock();
+        try {
+            while (this.conta.getSaldo() > 0.00) {
+                Double valorTransferencia = random.nextInt(2) == 0 ? 100.00 : 200.00;
+                Loja lojaAleatoria = random.nextInt(2) == 0 ? this.loja1 : this.loja2;
+                banco.transferir(this.conta, lojaAleatoria.conta, valorTransferencia, this.nome, lojaAleatoria.nomeLoja);
+            }
+        } finally {
+            lock.unlock();
         }
-
-        System.out.printf("Cliente %s finalizou as compras. Saldo final: R$ %.2f\n", this.getName(), conta.getSaldo());
     }
 }
