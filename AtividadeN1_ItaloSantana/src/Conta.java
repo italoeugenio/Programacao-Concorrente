@@ -1,29 +1,44 @@
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Conta {
-    private double saldo;
-    private String titular;
+    private Double saldo = 0.0;
+    private PropertyChangeSupport propertyChangeSupport;
+    private Lock lock = new ReentrantLock();
 
-    public Conta(double saldoInicial, String titular) {
-        this.saldo = saldoInicial;
-        this.titular = titular;
+    public Conta() {
+        this.propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
-    public synchronized void creditar(double valor) {
-        saldo += valor;
+    Double getSaldo() {
+        return this.saldo;
     }
 
-    public synchronized void debitar(double valor) {
-        if (saldo >= valor) {
-            saldo -= valor;
-        } else {
-            System.out.println("Saldo insuficiente para debitar R$" + valor);
+    void debitarSaldo(Double valor) {
+        lock.lock();
+        try {
+            Double saldoAnterior = this.saldo;
+            this.saldo -= valor;
+            propertyChangeSupport.firePropertyChange("pago", saldoAnterior, this.saldo);
+        } finally {
+            lock.unlock();
         }
     }
 
-    public synchronized double getSaldo() {
-        return saldo;
+    void creditarSaldo(Double valor) {
+        lock.lock();
+        try {
+            Double saldoAnterior = this.saldo;
+            this.saldo += valor;
+            propertyChangeSupport.firePropertyChange("pago", saldoAnterior, this.saldo);
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public synchronized String getTitular() {
-        return titular;
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 }
