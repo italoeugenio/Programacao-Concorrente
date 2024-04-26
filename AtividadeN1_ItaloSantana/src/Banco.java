@@ -1,12 +1,33 @@
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 public class Banco {
 
-    public synchronized void transferir(Conta remetente, Conta destinatario, double valor) {
-        if (remetente.getSaldo() >= valor) {
-            remetente.debitar(valor);
-            destinatario.creditar(valor);
-            System.out.println("Transferência de R$" + valor + " realizada de " + remetente.getTitular() + " para " + destinatario.getTitular());
-        } else {
-            System.out.println("Saldo insuficiente em " + remetente.getTitular() + " para transferência de R$" + valor);
+    private Lock lock = new ReentrantLock();
+
+    public void transferir(Conta remetente, Conta destinatario, Double valor,
+                           String nomeRemetente, String nomeDestinatario) {
+
+        // Bloqueia o acesso para que apenas uma thread faça a transferência por vez
+        lock.lock();
+
+        try {
+            // Verifica se o saldo do remetente é suficiente para a transferência
+            if (remetente.getSaldo() >= valor) {
+                System.out.println("Destinatário: " + nomeDestinatario);
+                System.out.println("Remetente: " + nomeRemetente);
+                System.out.println("Comprovante de transferência:");
+                System.out.println("-------------------------------------------------------");
+                System.out.println("Saldo do remetente: " + remetente.getSaldo());
+                System.out.println("Saldo do destinatário: " + destinatario.getSaldo());
+                System.out.println("Valor da transferência: " + valor);
+                System.out.println("-------------------------------------------------------");
+                System.out.println("\n");
+
+                remetente.debitarSaldo(valor);
+                destinatario.creditarSaldo(valor);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 }
