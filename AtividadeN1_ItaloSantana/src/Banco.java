@@ -13,7 +13,7 @@ public class Banco {
         lock.lock();
 
         try {
-            // Verifica se pode fazer transferência de acordo com o que tem na conta
+            // Verifica se pode fazer transferência de acordo com o que tem na conta.
             if (remetente.getSaldo() >= valor) {
                 // Mensagens a serem exibidas como comprovante de transferência
                 String destinatarioStr = "Recebedor: " + nomeDestinatario;
@@ -36,7 +36,7 @@ public class Banco {
                 System.out.println(linhaSeparadora);
                 System.out.println("\n");
 
-                // Deduz o valor transferido do saldo do remetente e adiciona ao saldo do destinatário
+                // Deduz o valor transferido do saldo do remetente e adiciona ao saldo do destinatário.
                 remetente.debitarSaldo(valor);
                 destinatario.creditarSaldo(valor);
             }

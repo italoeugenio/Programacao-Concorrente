@@ -42,7 +42,7 @@ public class Loja {
             System.out.println("Pagamento do funcionário: " + primeiroFuncionario.nome);
             System.out.println("\n");
 
-            // Verifica qual funcionário tem saldo menor e transfere o pagamento para ele
+            // Verifica qual funcionário tem saldo menor e transfere o pagamento para ele.
             if (this.primeiroFuncionario.contaSalario.getSaldo() > this.segundoFuncionario.contaSalario.getSaldo()) {
                 banco.transferir(this.conta, this.segundoFuncionario.contaSalario, 1400.00, this.nomeLoja, this.segundoFuncionario.nome);
                 this.segundoFuncionario.investirDinheiro();
